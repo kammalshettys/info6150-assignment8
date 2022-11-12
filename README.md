@@ -1,5 +1,10 @@
 # info6150-assignment8
 Assignment 8 Submission
+
+to run a application 
+run npm start 
+
+
 Created APIs with 
 
 user/create
