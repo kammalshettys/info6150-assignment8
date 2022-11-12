@@ -20,7 +20,7 @@ route.post('/create',(req,res)=>{
     })
 })
 
-route.post('/edit',(req,res)=>{
+route.put('/edit',(req,res)=>{
     const param = {
         name:req.body.name,
         email:req.body.email,
@@ -43,10 +43,10 @@ route.delete('/delete',(req,res)=>{
     }
     Users.deleteDoc(param,(error,result)=>{
         if(error){
-            res.json({isSuccess:false, error:error})
+            res.status(500).json({isSuccess:false, error:error})
         }
         else{
-            res.json({isSuccess:false, data:result});
+            res.json({isSuccess:true, data:result});
         }
     });
 });
@@ -54,10 +54,10 @@ route.delete('/delete',(req,res)=>{
 route.get('/getAll',(req,res)=>{
     Users.getAllDoc((error,records)=>{
         if(error){
-            res.json({isSuccess:false, message:"error"});
+            res.status(500).json({isSuccess:false, message:"error"});
         }
         else{
-            res.json({isSuccess:true, data:records})
+            res.status(200).json({isSuccess:true, data:records})
         }
     })
 })

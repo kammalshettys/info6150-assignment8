@@ -1,5 +1,5 @@
 const mogoose = require('mongoose');
-var encrypt = require('../services/en_decrpt');
+var bcrypt = require('bcryptjs');
 var validate = require('../services/validations')
 var MESSAGE = require('../constant/Message');
 const Message = require('../constant/Message');
@@ -27,7 +27,6 @@ var Users = mogoose.model('User',schema);
     const valid = validate.validateData(user);
     const isDublicate = await Users.findOne({email:user.email});
     if(isDublicate){
-
         func(validate.ErrorObj(MESSAGE.EMAIL_ALREADY_PRESENT,false),null);
         return;
     }
@@ -35,7 +34,9 @@ var Users = mogoose.model('User',schema);
         func(validate.ErrorObj(valid.error.message,true),null);
         return;
     }
-        user.password = encrypt(user.password);
+        const salt = await bcrypt.genSaltSync(10);
+        const hash = await bcrypt.hash(user.password,salt);
+        user.password = hash;
         user.save((err,result)=>{
             if(err){
                 func(err,null);
@@ -62,7 +63,7 @@ Users.editUser = async function(user,func){
     const param = {
         email:user.email,
         name:user.name,
-        password:encrypt(user.password)
+        password:user.password
     }
     doc.updateOne(param,(error,result)=>{
         if(error){
@@ -104,7 +105,8 @@ Users.getAllDoc = async function(func){
             password: e.password,
         }
     })
-    if(records==null){
+    console.log(records);
+    if(data.length<1){
         func(null,{message:MESSAGE.NO_USER_FOUND});
     }
     else{
